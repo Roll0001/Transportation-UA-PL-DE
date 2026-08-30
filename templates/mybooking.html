@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Мої бронювання{% endblock %}
+
+{% block content %}
+<style>
+    .bookings-container {
+        display: grid;
+        gap: 22px;
+    }
+    .card {
+        background: white;
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+    .card h2 {
+        margin-top: 0;
+        color: #0f172a;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+    }
+    thead {
+        background: #f8fafc;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+        font-weight: 700;
+        color: #0f172a;
+    }
+    a {
+        color: #2563eb;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .cancel-link {
+        color: #b91c1c !important;
+    }
+    .empty-message {
+        color: #64748b;
+        padding: 16px;
+        text-align: center;
+    }
+</style>
+
+<div class="bookings-container">
+    <div class="card">
+        <h2>Мої бронювання місць</h2>
+        {% if bookings %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ПІБ</th>
+                        <th>Маршрут</th>
+                        <th>Дата</th>
+                        <th>Місце</th>
+                        <th>Автобус</th>
+                        <th>Багаж</th>
+                        <th>Коментар</th>
+                        <th>Дія</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                            <td>{{ booking.from_city }} → {{ booking.to_city }}</td>
+                            <td>{{ booking.departure_date }}</td>
+                            <td>{{ booking.seat_number }}</td>
+                            <td>{{ booking.bus_number }}</td>
+                            <td>{% if booking.baggage %}Так{% else %}Ні{% endif %}</td>
+                            <td>{{ booking.comments|truncatewords:5 }}</td>
+                            <td>
+                                <a href="/booking/cancel/{{ booking.id }}/" class="cancel-link">Скасувати</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-message">У вас ще немає бронювань місць.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Мої передачі та посилки</h2>
+        {% if posts %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ПІБ</th>
+                        <th>Маршрут</th>
+                        <th>Дата</th>
+                        <th>Вага (кг)</th>
+                        <th>Автобус</th>
+                        <th>Коментар</th>
+                        <th>Дія</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>{{ post.first_name }} {{ post.last_name }}</td>
+                            <td>{{ post.from_city }} → {{ post.to_city }}</td>
+                            <td>{{ post.departure_date }}</td>
+                            <td>{{ post.weight_kg }}</td>
+                            <td>{{ post.bus_number }}</td>
+                            <td>{{ post.comments|truncatewords:5 }}</td>
+                            <td>
+                                <a href="/post/cancel/{{ post.id }}/" class="cancel-link">Скасувати</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-message">У вас ще немає передач або посилок.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

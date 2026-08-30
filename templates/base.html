@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Transportation UA PL DE{% endblock %}</title>
+    <style>
+        :root {
+            --navy: #0f172a;
+            --blue: #2563eb;
+            --blue-soft: #dbeafe;
+            --bg: #f3f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #64748b;
+            --success: #dcfce7;
+            --success-text: #166534;
+            --line: #e2e8f0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(180deg, #edf5ff 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 24px 48px;
+        }
+        nav {
+            background: rgba(15, 23, 42, 0.96);
+            color: white;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 0 24px;
+            flex-wrap: wrap;
+        }
+        .nav-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+        }
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #60a5fa 100%);
+            color: white;
+            border-radius: 28px;
+            padding: 38px 32px;
+            margin: 24px 0 28px;
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.30);
+        }
+        .hero h1 {
+            margin: 0 0 16px;
+            font-size: clamp(2rem, 4vw, 3.3rem);
+            line-height: 1.15;
+        }
+        .hero p {
+            margin: 0 0 20px;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+        }
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+        .hero-btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+        .hero-btn.primary {
+            background: #fff;
+            color: var(--navy);
+        }
+        .hero-btn.secondary {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .route-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+        .route-stop {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--navy);
+            box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+        }
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+            padding: 24px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.7rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .info-item {
+            background: linear-gradient(180deg, #f8fbff, #eef6ff);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px;
+        }
+        .info-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--blue);
+        }
+        form {
+            display: grid;
+            gap: 14px;
+        }
+        label {
+            font-weight: 600;
+            display: grid;
+            gap: 8px;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .btn-secondary {
+            background: #0f172a;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px;
+        }
+        .messages li {
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+        }
+        .hidden-owner {
+            display: none;
+        }
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 14px 32px;
+            }
+            .nav-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 10px 14px;
+            }
+            .hero {
+                padding: 26px 18px;
+            }
+            .hero-actions {
+                flex-direction: column;
+            }
+            .hero-btn {
+                width: 100%;
+                text-align: center;
+            }
+            .route-map,
+            .info-grid,
+            .two-column,
+            .booking-wrap,
+            .post-wrap {
+                grid-template-columns: 1fr;
+            }
+            .card,
+            .booking-panel,
+            .post-panel,
+            .booking-summary,
+            .post-info {
+                padding: 18px;
+            }
+            .bus-seats {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <strong>UA PL DE</strong>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="/home/">Головна</a>
+                    <a href="/available-spots/">Вільні місця</a>
+                    <a href="/my-bookings/">Мої бронювання</a>
+                    <a href="/auth/logout/">Вийти</a>
+                    {% if user.is_staff or user.is_superuser or user.groups.all %}
+                        <a href="/secret/">Адмін</a>
+                    {% endif %}
+                {% else %}
+                    <a href="/auth/login/">Логін</a>
+                    <a href="/auth/register/">Реєстрація</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

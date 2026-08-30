@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Головна{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div style="max-width: 760px;">
+        <p style="display:inline-block; background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); padding: 8px 12px; border-radius: 999px; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 18px;">
+            12 років регулярних перевезень
+        </p>
+        <h1>Україна — Польща — Німеччина</h1>
+        <p>Надійні міжміські перевезення з комфортом, регулярністю та чітким маршрутом через усі основні точки шляху.</p>
+        <div class="hero-actions">
+            <a class="hero-btn primary" href="/booking/">Забронювати місце</a>
+            <a class="hero-btn secondary" href="/available-spots/">Переглянути вільні місця</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Маршрут</h2>
+    <div class="route-map">
+        {% for stop in route_stops %}
+            <div class="route-stop">{{ stop }}</div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>Що потрібно для бронювання</h2>
+    <div class="info-grid">
+        <div class="info-item"><strong>1. Пасажир</strong>Ім’я та прізвище, які будуть вказані в бронюванні.</div>
+        <div class="info-item"><strong>2. Маршрут</strong>Місто відправлення та прибуття з доступного списку.</div>
+        <div class="info-item"><strong>3. Контакт</strong>Телефон для підтвердження та зв’язку з водієм/менеджером. Теж має бути вайбер.</div>
+        <div class="info-item"><strong>4. Місце</strong>Вибір номера місця та перевірка його вільності.</div>
+        <div class="info-item"><strong>5. Коментар</strong>Багаж, особливі побажання або додаткові деталі не обов’язково.</div>
+    </div>
+</div>
+{% endblock %}

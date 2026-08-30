@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Вільні місця{% endblock %}
+
+{% block content %}
+<style>
+    .bus-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .bus-card {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbeafe;
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: 0 12px 25px rgba(37, 99, 235, 0.08);
+    }
+    .bus-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .bus-info {
+        background: #f8fafc;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 16px;
+        color: #1e293b;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    .bus-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .bus-seats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+    }
+    .seat {
+        display: block;
+        border-radius: 12px;
+        padding: 12px 8px;
+        text-align: center;
+        font-weight: 700;
+        border: 1px solid #dbeafe;
+        background: #dcfce7;
+        color: #14532d;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+    .seat:hover {
+        transform: translateY(-1px);
+    }
+    .seat.occupied {
+        background: #fecaca;
+        color: #7f1d1d;
+        border-color: #fca5a5;
+        pointer-events: none;
+        opacity: 0.8;
+    }
+    .baggage-box {
+        margin-top: 20px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #1d4ed8;
+        font-weight: 700;
+    }
+    .baggage-icon {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: white;
+        border: 1px solid #bfdbfe;
+    }
+</style>
+
+<div class="card">
+    <h2>Вільні місця</h2>
+
+    <a href="/post/" style="text-decoration: none; color: inherit;">
+        <div class="baggage-box">
+            <div class="baggage-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Багажник для передач і посилок">
+                    <path d="M7 8V7C7 5.34315 8.34315 4 10 4H14C15.6569 4 17 5.34315 17 7V8" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5 8H19C20.1046 8 21 8.89543 21 10V16C21 17.1046 20.1046 18 19 18H5C3.89543 18 3 17.1046 3 16V10C3 8.89543 3.89543 8 5 8Z" stroke="#1d4ed8" stroke-width="2"/>
+                    <path d="M12 12V16" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span>Передачі та посилки</span>
+        </div>
+    </a>
+
+    <div class="bus-grid">
+        {% for bus in buses %}
+            <div class="bus-card">
+                <div class="bus-header">
+                    <div class="bus-title">Автобус {{ bus.number }}</div>
+                    <div class="badge">8 місць</div>
+                </div>
+                <div class="bus-info">
+                    <strong>Розклад:</strong> {{ bus.schedule }}<br>
+                    {{ bus.note }}
+                </div>
+
+                <div class="bus-seats">
+                    {% for seat in bus.seats %}
+                        {% if seat in bus.occupied %}
+                            <div class="seat occupied">{{ seat }}</div>
+                        {% else %}
+                            <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}">{{ seat }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

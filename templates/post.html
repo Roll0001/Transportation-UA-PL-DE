@@ -1,28 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}Бронювання{% endblock %}
+{% block title %}Передачі та посилки{% endblock %}
 
 {% block content %}
 <style>
-    .booking-wrap {
+    .post-wrap {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
+        grid-template-columns: 1.25fr 0.75fr;
         gap: 22px;
-        align-items: start;
     }
-    .booking-panel {
-        background: #ffffff;
+    .post-panel {
+        background: white;
         border-radius: 22px;
+        padding: 28px;
         box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
         border: 1px solid #e2e8f0;
-        padding: 28px;
     }
-    .booking-panel h2 {
+    .post-panel h2 {
         margin-top: 0;
         margin-bottom: 18px;
-        font-size: 2rem;
     }
-    .booking-form {
+    .post-form {
         display: grid;
         gap: 18px;
     }
@@ -50,7 +48,7 @@
         font-size: 1rem;
     }
     .field-block textarea {
-        min-height: 110px;
+        min-height: 120px;
         resize: vertical;
     }
     .submit-btn {
@@ -63,31 +61,25 @@
         font-weight: 700;
         cursor: pointer;
     }
-    .booking-summary {
+    .post-info {
         background: linear-gradient(180deg, #eff6ff, #dbeafe);
-        border: 1px solid #bfdbfe;
         border-radius: 22px;
+        border: 1px solid #bfdbfe;
         padding: 24px;
     }
-    .summary-box {
-        background: rgba(255,255,255,0.8);
+    .post-info-box {
+        background: rgba(255,255,255,0.75);
+        border: 1px solid #bfdbfe;
         border-radius: 16px;
         padding: 16px;
         margin-top: 16px;
-        border: 1px solid #bfdbfe;
-    }
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 10px;
     }
 </style>
 
-<div class="booking-wrap">
-    <div class="booking-panel">
-        <h2>Форма бронювання</h2>
-        <form method="post" class="booking-form">
+<div class="post-wrap">
+    <div class="post-panel">
+        <h2>Передачі та посилки</h2>
+        <form method="post" class="post-form">
             {% csrf_token %}
             {{ form.non_field_errors }}
 
@@ -123,24 +115,14 @@
                 </div>
             </div>
 
-            <div class="two-column">
-                <div class="field-block">
-                    {{ form.departure_date.label_tag }}
-                    {{ form.departure_date }}
-                    {{ form.departure_date.errors }}
-                </div>
-                <div class="field-block">
-                    {{ form.seat_number.label_tag }}
-                    {{ form.seat_number }}
-                    {{ form.seat_number.errors }}
-                </div>
+            <div class="field-block">
+                {{ form.weight_kg.label_tag }}
+                {{ form.weight_kg }}
+                {{ form.weight_kg.errors }}
             </div>
 
-            <div class="field-block">
-                {{ form.baggage.label_tag }}
-                {{ form.baggage }}
-                {{ form.baggage.errors }}
-            </div>
+            {{ form.departure_date }}
+            {{ form.bus_number }}
 
             <div class="field-block">
                 {{ form.comments.label_tag }}
@@ -148,7 +130,7 @@
                 {{ form.comments.errors }}
             </div>
 
-            <button type="submit" class="submit-btn">Забронювати</button>
+            <button type="submit" class="submit-btn">Оформити передачу</button>
         </form>
     </div>
 
