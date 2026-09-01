@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum
 
-from .forms import BookingForm, PostForm, get_bus_departure_date
-from .models import Booking, Post
+from .forms import BookingForm, PostForm, get_bus_dates, get_bus_departure_date, get_bus_direction_dates
+from .models import Booking, Bus, Post
 
 
 def is_admin_user(user):
@@ -23,16 +23,16 @@ def get_available_bus_for_post(weight_kg):
     
     for bus_number in [1, 2]:
         departure_date = get_bus_departure_date(bus_number)
-        
+
         total_weight = Post.objects.filter(
             bus_number=bus_number,
             departure_date=departure_date
         ).aggregate(total=Sum('weight_kg'))['total'] or 0
-        
+
         if float(total_weight) + float(weight_kg) <= MAX_WEIGHT_PER_BUS:
             return bus_number, departure_date
-    
-    # Якщо обидва автобуси перевантажені, повертаємо меньш навантажений
+
+    # Якщо обидва автобуси перевантажені, повертаємо менш навантажений
     bus_weights = {}
     for bus_number in [1, 2]:
         departure_date = get_bus_departure_date(bus_number)
@@ -66,17 +66,52 @@ def home_page(request):
 
 def available_spots_page(request):
     buses = []
-    for bus_number in [1, 2]:
+    bus_records = Bus.objects.all().order_by("direction", "number")
+
+    for bus in bus_records:
         occupied = sorted(set(
-            Booking.objects.filter(bus_number=bus_number).values_list("seat_number", flat=True)
+            Booking.objects.filter(bus_number=bus.number, departure_date=bus.departure_date).values_list("seat_number", flat=True)
         ))
         buses.append({
-            "number": bus_number,
+            "number": bus.number,
             "seats": list(range(1, 9)),
             "occupied": [seat for seat in range(1, 9) if seat in occupied],
-            "schedule": "Регулярний маршрут: виїзд у понеділок вранці, повернення у середу." if bus_number == 1 else "Регулярний маршрут: виїзд у п'ятницю, повернення в суботу.",
-            "note": "Маршрут виконується регулярно по розкладу.",
+            "departure_date": bus.departure_date,
+            "return_date": bus.return_date,
+            "note": bus.note or "Маршрут без додаткових відомостей.",
+            "group": bus.direction,
         })
+
+    if not buses:
+        for bus_number in [1, 2]:
+            departure_date, return_date = get_bus_direction_dates(bus_number, is_return_trip=False)
+            occupied = sorted(set(
+                Booking.objects.filter(bus_number=bus_number, departure_date=departure_date).values_list("seat_number", flat=True)
+            ))
+            buses.append({
+                "number": bus_number,
+                "seats": list(range(1, 9)),
+                "occupied": [seat for seat in range(1, 9) if seat in occupied],
+                "departure_date": departure_date,
+                "return_date": return_date,
+                "note": "Відправлення у напрямку до пункту призначення.",
+                "group": "outbound",
+            })
+
+            return_departure_date, return_return_date = get_bus_direction_dates(bus_number, is_return_trip=True)
+            occupied_return = sorted(set(
+                Booking.objects.filter(bus_number=bus_number, departure_date=return_departure_date).values_list("seat_number", flat=True)
+            ))
+            buses.append({
+                "number": bus_number,
+                "seats": list(range(1, 9)),
+                "occupied": [seat for seat in range(1, 9) if seat in occupied_return],
+                "departure_date": return_departure_date,
+                "return_date": return_return_date,
+                "note": "Повернення того самого автобуса назад.",
+                "group": "return",
+            })
+
     return render(request, "availablespots.html", {"buses": buses})
 
 
@@ -89,11 +124,14 @@ def booking_page(request):
 
     selected_seat = request.GET.get("seat")
     selected_bus = request.GET.get("bus")
+    selected_direction = request.GET.get("direction", "outbound")
+    
     if selected_seat:
         initial["seat_number"] = selected_seat
     if selected_bus:
         initial["bus_number"] = int(selected_bus)
-        initial["departure_date"] = get_bus_departure_date(int(selected_bus))
+        is_return = selected_direction == "return"
+        initial["departure_date"] = get_bus_direction_dates(int(selected_bus), is_return_trip=is_return)[0]
 
     form = BookingForm(initial=initial)
     if request.method == "POST":
@@ -102,7 +140,7 @@ def booking_page(request):
             booking = form.save(commit=False)
             booking.user = request.user
             booking.bus_number = form.cleaned_data.get("bus_number") or int(request.GET.get("bus", 1))
-            booking.departure_date = get_bus_departure_date(booking.bus_number)
+            booking.departure_date = form.cleaned_data.get("departure_date")
             booking.save()
             messages.success(request, "Бронювання успішно створено.")
             return redirect("my_bookings")
@@ -158,6 +196,23 @@ def post_page(request):
 def secret_page(request):
     if not is_admin_user(request.user):
         return redirect('home')
+
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
     bookings = Booking.objects.all().order_by("departure_date", "seat_number")
     posts = Post.objects.all().order_by("departure_date", "bus_number")
-    return render(request, "secret_page.html", {"bookings": bookings, "posts": posts})
+
+    if from_date:
+        bookings = bookings.filter(departure_date__gte=from_date)
+        posts = posts.filter(departure_date__gte=from_date)
+    if to_date:
+        bookings = bookings.filter(departure_date__lte=to_date)
+        posts = posts.filter(departure_date__lte=to_date)
+
+    return render(request, "secret_page.html", {
+        "bookings": bookings,
+        "posts": posts,
+        "from_date": from_date,
+        "to_date": to_date,
+    })

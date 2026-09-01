@@ -5,19 +5,39 @@ from django import forms
 from .models import Booking, Post, CITY_CHOICES
 
 
-def get_bus_departure_date(bus_number):
+def get_bus_direction_dates(bus_number, is_return_trip=False):
     today = date.today()
-    if bus_number == 1:
-        days_until_monday = (7 - today.weekday()) % 7
-        if days_until_monday == 0:
-            days_until_monday = 7
-        return today + timedelta(days=days_until_monday)
-    if bus_number == 2:
-        days_until_friday = (4 - today.weekday()) % 7
-        if days_until_friday == 0:
-            days_until_friday = 7
-        return today + timedelta(days=days_until_friday)
-    return today
+
+    if is_return_trip:
+        departure_weekdays = {
+            1: 2,
+            2: 5,
+        }
+    else:
+        departure_weekdays = {
+            1: 1,
+            2: 4,
+        }
+
+    departure_weekday = departure_weekdays.get(bus_number)
+    if departure_weekday is None:
+        return today, today
+
+    days_until_departure = (departure_weekday - today.weekday()) % 7
+    if days_until_departure == 0:
+        days_until_departure = 7
+    departure_date = today + timedelta(days=days_until_departure)
+
+    return_date = departure_date + timedelta(days=2)
+    return departure_date, return_date
+
+
+def get_bus_dates(bus_number):
+    return get_bus_direction_dates(bus_number, is_return_trip=False)
+
+
+def get_bus_departure_date(bus_number):
+    return get_bus_dates(bus_number)[0]
 
 
 class BookingForm(forms.ModelForm):

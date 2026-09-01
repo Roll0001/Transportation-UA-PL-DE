@@ -4,15 +4,51 @@
 
 {% block content %}
 <style>
+    .schedule-groups {
+        display: grid;
+        gap: 24px;
+        margin-top: 20px;
+    }
+    .schedule-group {
+        background: #f8fbff;
+        border: 1px solid #dbeafe;
+        border-radius: 20px;
+        padding: 18px;
+        display: grid;
+        gap: 18px;
+    }
+    .group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .group-title {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+    .group-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-weight: 700;
+        font-size: 0.78rem;
+    }
     .bus-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 20px;
-        margin-top: 20px;
     }
     .bus-card {
         background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
         border: 1px solid #dbeafe;
+        border-left: 5px solid #2563eb;
         border-radius: 22px;
         padding: 20px;
         box-shadow: 0 12px 25px rgba(37, 99, 235, 0.08);
@@ -107,29 +143,71 @@
         </div>
     </a>
 
-    <div class="bus-grid">
-        {% for bus in buses %}
-            <div class="bus-card">
-                <div class="bus-header">
-                    <div class="bus-title">Автобус {{ bus.number }}</div>
-                    <div class="badge">8 місць</div>
-                </div>
-                <div class="bus-info">
-                    <strong>Розклад:</strong> {{ bus.schedule }}<br>
-                    {{ bus.note }}
-                </div>
-
-                <div class="bus-seats">
-                    {% for seat in bus.seats %}
-                        {% if seat in bus.occupied %}
-                            <div class="seat occupied">{{ seat }}</div>
-                        {% else %}
-                            <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}">{{ seat }}</a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+    <div class="schedule-groups">
+        <div class="schedule-group">
+            <div class="group-header">
+                <h3 class="group-title">Рейси в напрямку</h3>
+                <span class="group-badge">Група 1</span>
             </div>
-        {% endfor %}
+            <div class="bus-grid">
+                {% for bus in buses %}
+                    {% if bus.group == 'outbound' %}
+                        <div class="bus-card">
+                            <div class="bus-header">
+                                <div class="bus-title">Автобус {{ bus.number }}</div>
+                                <div class="badge">8 місць</div>
+                            </div>
+                            <div class="bus-info">
+                                <strong>Дата виїзду:</strong> {{ bus.departure_date|date:"d.m.Y" }} о {{ bus.departure_time|time:"H:i" }}
+                            </div>
+
+                            <div class="bus-seats">
+                                {% for seat in bus.seats %}
+                                    {% if seat in bus.occupied %}
+                                        <div class="seat occupied">{{ seat }}</div>
+                                    {% else %}
+                                        <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=outbound">{{ seat }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="schedule-group">
+            <div class="group-header">
+                <h3 class="group-title">Рейси повернення</h3>
+                <span class="group-badge">Група 2</span>
+            </div>
+            <div class="bus-grid">
+                {% for bus in buses %}
+                    {% if bus.group == 'return' %}
+                        <div class="bus-card">
+                            <div class="bus-header">
+                                <div class="bus-title">Автобус {{ bus.number }}</div>
+                                <div class="badge">8 місць</div>
+                            </div>
+                            <div class="bus-info">
+                                <strong>Дата повернення:</strong> {{ bus.return_date|date:"d.m.Y" }} о {{ bus.return_time|time:"H:i" }}
+                            </div>
+
+                            <div class="bus-seats">
+                                {% for seat in bus.seats %}
+                                    {% if seat in bus.occupied %}
+                                        <div class="seat occupied">{{ seat }}</div>
+                                    {% else %}
+                                        <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=return">{{ seat }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
+
 {% endblock %}
