@@ -131,10 +131,19 @@
 
             <div class="two-column">
                 <div class="field-block">
-                    {{ form.departure_date.label_tag }}
-                    {{ form.departure_date }}
-                    {{ form.departure_date.errors }}
+                    {{ form.pickup_location.label_tag }}
+                    {{ form.pickup_location }}
+                    {{ form.pickup_location.errors }}
                 </div>
+                <div class="field-block">
+                    {{ form.dropoff_location.label_tag }}
+                    {{ form.dropoff_location }}
+                    {{ form.dropoff_location.errors }}
+                </div>
+            </div>
+
+            <div class="two-column">
+
                 <div class="field-block">
                     {{ form.seat_number.label_tag }}
                     {{ form.seat_number }}

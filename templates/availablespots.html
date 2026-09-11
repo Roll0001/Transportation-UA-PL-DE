@@ -78,8 +78,27 @@
     }
     .bus-seats {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
+    }
+    .seat-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+    .driver-seat {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        border: 1px dashed #94a3b8;
+        border-radius: 12px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+    .driver-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .seat {
         display: block;
@@ -162,12 +181,26 @@
                             </div>
 
                             <div class="bus-seats">
-                                {% for seat in bus.seats %}
-                                    {% if seat in bus.occupied %}
-                                        <div class="seat occupied">{{ seat }}</div>
-                                    {% else %}
-                                        <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=outbound">{{ seat }}</a>
-                                    {% endif %}
+                                <div class="seat-row driver-row">
+                                    <div class="driver-seat">0 · Водій</div>
+                                    {% for seat in bus.seat_rows.0 %}
+                                        {% if seat in bus.occupied %}
+                                            <div class="seat occupied">{{ seat }}</div>
+                                        {% else %}
+                                            <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=outbound">{{ seat }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% for seat_row in bus.seat_rows|slice:"1:" %}
+                                    <div class="seat-row">
+                                        {% for seat in seat_row %}
+                                            {% if seat in bus.occupied %}
+                                                <div class="seat occupied">{{ seat }}</div>
+                                            {% else %}
+                                                <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=outbound">{{ seat }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -194,12 +227,26 @@
                             </div>
 
                             <div class="bus-seats">
-                                {% for seat in bus.seats %}
-                                    {% if seat in bus.occupied %}
-                                        <div class="seat occupied">{{ seat }}</div>
-                                    {% else %}
-                                        <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=return">{{ seat }}</a>
-                                    {% endif %}
+                                <div class="seat-row driver-row">
+                                    <div class="driver-seat">0 · Водій</div>
+                                    {% for seat in bus.seat_rows.0 %}
+                                        {% if seat in bus.occupied %}
+                                            <div class="seat occupied">{{ seat }}</div>
+                                        {% else %}
+                                            <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=return">{{ seat }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% for seat_row in bus.seat_rows|slice:"1:" %}
+                                    <div class="seat-row">
+                                        {% for seat in seat_row %}
+                                            {% if seat in bus.occupied %}
+                                                <div class="seat occupied">{{ seat }}</div>
+                                            {% else %}
+                                                <a class="seat" href="/booking/?seat={{ seat }}&bus={{ bus.number }}&direction=return">{{ seat }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>

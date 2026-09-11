@@ -88,7 +88,7 @@ def available_spots_page(request):
         ))
         buses.append({
             "number": bus_number,
-            "seats": list(range(1, 9)),
+            "seat_rows": [[1, 2], [3, 4, 5], [6, 7, 8]],
             "occupied": [seat for seat in range(1, 9) if seat in occupied],
             "departure_date": departure_date,
             "return_date": return_date,
@@ -103,7 +103,7 @@ def available_spots_page(request):
         ))
         buses.append({
             "number": bus_number,
-            "seats": list(range(1, 9)),
+            "seat_rows": [[1, 2], [3, 4, 5], [6, 7, 8]],
             "occupied": [seat for seat in range(1, 9) if seat in occupied_return],
             "departure_date": return_departure_date,
             "return_date": return_return_date,
@@ -117,14 +117,13 @@ def available_spots_page(request):
 
 @login_required(login_url="/auth/login/")
 def booking_page(request):
-    initial = {
-        "from_city": "Lviv",
-        "to_city": "Berlin",
-    }
-
     selected_seat = request.GET.get("seat")
     selected_bus = request.GET.get("bus")
     selected_direction = request.GET.get("direction", "outbound")
+    initial = {
+        "from_city": "Berlin" if selected_direction == "return" else "Lviv",
+        "to_city": "Lviv" if selected_direction == "return" else "Berlin",
+    }
     selected_date = None
 
     if selected_seat:
@@ -135,9 +134,9 @@ def booking_page(request):
         selected_date = get_bus_direction_dates(int(selected_bus), is_return_trip=is_return)[0]
         initial["departure_date"] = selected_date
 
-    form = BookingForm(initial=initial)
+    form = BookingForm(initial=initial, direction=selected_direction)
     if request.method == "POST":
-        form = BookingForm(request.POST)
+        form = BookingForm(request.POST, direction=selected_direction)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.user = request.user

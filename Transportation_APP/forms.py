@@ -5,6 +5,24 @@ from django import forms
 from .models import Booking, Post, CITY_CHOICES
 
 
+START_CITY_ORDER = ["Ternopil", "Zolochiv", "Lviv"]
+
+
+def get_direction_city_choices(direction):
+    start_cities = set(START_CITY_ORDER)
+    start_choices = [
+        (city, label)
+        for city in START_CITY_ORDER
+        for choice_city, label in CITY_CHOICES
+        if choice_city == city
+    ]
+    destination_choices = [choice for choice in CITY_CHOICES if choice[0] not in start_cities]
+
+    if direction == "return":
+        return destination_choices, start_choices
+    return start_choices, destination_choices
+
+
 def get_next_weekday_date(target_weekday, reference_date=None):
     today = reference_date or date.today()
     days_until_departure = (target_weekday - today.weekday()) % 7
@@ -48,15 +66,21 @@ class BookingForm(forms.ModelForm):
     first_name = forms.CharField(label="Ім'я", max_length=60)
     last_name = forms.CharField(label="Прізвище", max_length=60)
     phone = forms.CharField(label="Телефон", max_length=20)
-    seat_number = forms.IntegerField(min_value=1, max_value=24, label="Номер місця")
+    seat_number = forms.IntegerField(min_value=1, max_value=8, label="Номер місця")
     from_city = forms.ChoiceField(choices=CITY_CHOICES, label="Звідки")
     to_city = forms.ChoiceField(choices=CITY_CHOICES, label="Куди")
+    pickup_location = forms.CharField(label="Точне місце відправлення", max_length=255, required=True)
+    dropoff_location = forms.CharField(label="Точна точка прибуття", max_length=255, required=True)
     departure_date = forms.DateField(required=False, widget=forms.HiddenInput(), label="Дата відправлення")
     baggage = forms.BooleanField(required=False, label="Багаж")
     comments = forms.CharField(required=False, label="Коментар", widget=forms.Textarea(attrs={"rows": 3}))
 
     def __init__(self, *args, **kwargs):
+        direction = kwargs.pop("direction", "outbound")
         super().__init__(*args, **kwargs)
+        from_choices, to_choices = get_direction_city_choices(direction)
+        self.fields["from_city"].choices = from_choices
+        self.fields["to_city"].choices = to_choices
         if self.initial.get("seat_number"):
             self.fields["seat_number"].widget.attrs["value"] = self.initial["seat_number"]
         if self.initial.get("from_city"):
@@ -76,6 +100,8 @@ class BookingForm(forms.ModelForm):
             "phone",
             "from_city",
             "to_city",
+            "pickup_location",
+            "dropoff_location",
             "departure_date",
             "bus_number",
             "seat_number",
@@ -135,6 +161,8 @@ class PostForm(forms.ModelForm):
     phone = forms.CharField(label="Телефон", max_length=20)
     from_city = forms.ChoiceField(choices=CITY_CHOICES, label="Звідки")
     to_city = forms.ChoiceField(choices=CITY_CHOICES, label="Куди")
+    pickup_location = forms.CharField(label="Точне місце відправлення", max_length=255, required=True)
+    dropoff_location = forms.CharField(label="Точна точка прибуття", max_length=255, required=True)
     weight_kg = forms.DecimalField(label="Вага посилки (кг)", max_digits=5, decimal_places=2, min_value=0.01, max_value=50)
     departure_date = forms.DateField(required=False, widget=forms.HiddenInput(), label="Дата відправлення")
     bus_number = forms.IntegerField(required=False, widget=forms.HiddenInput())
@@ -148,6 +176,8 @@ class PostForm(forms.ModelForm):
             "phone",
             "from_city",
             "to_city",
+            "pickup_location",
+            "dropoff_location",
             "weight_kg",
             "departure_date",
             "bus_number",

@@ -115,6 +115,19 @@
                 </div>
             </div>
 
+            <div class="two-column">
+                <div class="field-block">
+                    {{ form.pickup_location.label_tag }}
+                    {{ form.pickup_location }}
+                    {{ form.pickup_location.errors }}
+                </div>
+                <div class="field-block">
+                    {{ form.dropoff_location.label_tag }}
+                    {{ form.dropoff_location }}
+                    {{ form.dropoff_location.errors }}
+                </div>
+            </div>
+
             <div class="field-block">
                 {{ form.weight_kg.label_tag }}
                 {{ form.weight_kg }}

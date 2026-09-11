@@ -19,8 +19,8 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields["last_name"].widget.attrs.update({"placeholder": "Введіть прізвище"})
         self.fields["password1"].label = "Пароль"
         self.fields["password2"].label = "Підтвердження пароля"
-        self.fields["password1"].widget.attrs.update({"placeholder": "Введіть пароль"})
-        self.fields["password2"].widget.attrs.update({"placeholder": "Повторіть пароль"})
+        self.fields["password1"].widget.attrs.update({"placeholder": "Введіть пароль", "autocomplete": "new-password"})
+        self.fields["password2"].widget.attrs.update({"placeholder": "Повторіть пароль", "autocomplete": "new-password"})
 
     def clean(self):
         cleaned_data = super().clean()
