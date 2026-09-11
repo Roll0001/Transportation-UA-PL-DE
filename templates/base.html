@@ -86,6 +86,16 @@
             font-size: 1.1rem;
             color: rgba(255,255,255,0.9);
         }
+        .photos-hero h1 {
+            max-width: 720px;
+            margin-top: 10px;
+        }
+        .photos-hero p {
+            max-width: 650px;
+        }
+        .photos-kicker {
+            color: #bfdbfe;
+        }
         .hero-actions {
             display: flex;
             gap: 14px;
@@ -136,6 +146,243 @@
         .card h2 {
             margin-top: 0;
             font-size: 1.7rem;
+        }
+        .travel-gallery {
+            margin: 0 0 28px;
+        }
+        .gallery-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+        .gallery-heading h2 {
+            margin: 5px 0 0;
+            color: var(--navy);
+        }
+        .gallery-heading p {
+            max-width: 430px;
+            margin: 0;
+            color: var(--muted);
+        }
+        .gallery-group + .gallery-group {
+            margin-top: 28px;
+        }
+        .gallery-group-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .gallery-group-heading h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1.2rem;
+        }
+        .gallery-group-heading span {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .section-kicker {
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1.45fr 1fr 1fr;
+            gap: 14px;
+        }
+        .gallery-photo {
+            width: 100%;
+            height: 220px;
+            display: block;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.14);
+        }
+        .gallery-photo-large {
+            height: 300px;
+        }
+        .gallery-grid-interior {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .gallery-item {
+            position: relative;
+            display: block;
+            min-width: 0;
+            padding: 0;
+            overflow: hidden;
+            background: none;
+            border: 0;
+            border-radius: 18px;
+            cursor: zoom-in;
+        }
+        .gallery-item::after {
+            content: 'Переглянути';
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.76);
+            color: white;
+            font-size: 0.75rem;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: 0.2s ease;
+        }
+        .gallery-item:hover::after,
+        .gallery-item:focus-visible::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .gallery-item:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.45);
+            outline-offset: 3px;
+        }
+        .gallery-item .gallery-photo {
+            transition: transform 0.25s ease, filter 0.25s ease;
+        }
+        .gallery-item:hover .gallery-photo {
+            transform: scale(1.04);
+            filter: brightness(0.88);
+        }
+        .lightbox[hidden] {
+            display: none;
+        }
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 56px 70px;
+            background: rgba(2, 6, 23, 0.92);
+        }
+        .lightbox-content {
+            max-width: min(1000px, 90vw);
+            margin: 0;
+            text-align: center;
+        }
+        .lightbox-content img {
+            display: block;
+            max-width: 100%;
+            max-height: 78vh;
+            border-radius: 12px;
+            object-fit: contain;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+        }
+        .lightbox-content figcaption {
+            margin-top: 12px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+        .lightbox-close,
+        .lightbox-arrow {
+            position: absolute;
+            z-index: 1;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            color: white;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .lightbox-close { top: 22px; right: 24px; }
+        .lightbox-prev { left: 24px; }
+        .lightbox-next { right: 24px; }
+        .lightbox-close:hover,
+        .lightbox-arrow:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .lightbox-open {
+            overflow: hidden;
+        }
+        .auth-layout {
+            display: grid;
+            grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1fr);
+            max-width: 980px;
+            min-height: 560px;
+            margin: 28px auto;
+            overflow: hidden;
+            background: var(--card);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+        }
+        .auth-visual {
+            position: relative;
+            display: flex;
+            align-items: end;
+            min-height: 300px;
+            padding: 30px;
+            color: white;
+            background: linear-gradient(160deg, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.9)), url('{{ MEDIA_URL }}photo bus.png') center/cover;
+        }
+        .auth-visual h1 {
+            margin: 8px 0 10px;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.05;
+        }
+        .auth-visual p {
+            margin: 0;
+            color: rgba(255,255,255,0.82);
+        }
+        .auth-copy {
+            align-self: end;
+        }
+        .auth-form-panel {
+            padding: 46px clamp(24px, 5vw, 58px);
+        }
+        .auth-form-panel h2 {
+            margin: 0 0 8px;
+            color: var(--navy);
+            font-size: 2rem;
+        }
+        .auth-subtitle {
+            margin: 0 0 28px;
+            color: var(--muted);
+        }
+        .auth-form-panel form {
+            gap: 16px;
+        }
+        .auth-form-panel label {
+            color: var(--navy);
+        }
+        .auth-form-panel input {
+            min-height: 46px;
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .auth-form-panel input:focus {
+            outline: none;
+            background: white;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        }
+        .auth-form-panel button {
+            min-height: 46px;
+            margin-top: 6px;
+        }
+        .auth-switch {
+            margin: 24px 0 0;
+            color: var(--muted);
+            text-align: center;
+        }
+        .auth-switch a {
+            color: var(--blue);
+            font-weight: 700;
+            text-decoration: none;
         }
         .info-grid {
             display: grid;
@@ -245,8 +492,34 @@
             .info-grid,
             .two-column,
             .booking-wrap,
-            .post-wrap {
+            .post-wrap,
+            .gallery-grid,
+            .auth-layout {
                 grid-template-columns: 1fr;
+            }
+            .gallery-heading {
+                display: block;
+            }
+            .gallery-heading p {
+                margin-top: 8px;
+            }
+            .gallery-photo,
+            .gallery-photo-large {
+                height: 220px;
+            }
+            .gallery-grid-interior {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .lightbox {
+                padding: 54px 16px 36px;
+            }
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
+            .lightbox-content {
+                max-width: 82vw;
+            }
+            .auth-visual {
+                min-height: 280px;
             }
             .card,
             .booking-panel,
@@ -270,6 +543,7 @@
                     <a href="/home/">Головна</a>
                     <a href="/available-spots/">Вільні місця</a>
                     <a href="/my-bookings/">Мої бронювання</a>
+                    <a href="/photos/">Фото</a>
                     <a href="/auth/logout/">Вийти</a>
                     {% if user.is_staff or user.is_superuser or user.groups.all %}
                         <a href="/secret/">Адмін</a>

@@ -158,7 +158,7 @@
                                 <div class="badge">8 місць</div>
                             </div>
                             <div class="bus-info">
-                                <strong>Дата виїзду:</strong> {{ bus.departure_date|date:"d.m.Y" }} о {{ bus.departure_time|time:"H:i" }}
+                                <strong>Дата виїзду:</strong> {{ bus.departure_date|date:"d.m.Y" }} ({{ bus.weekday_label }}) — <strong>Час:</strong> <h3>о 6:00</h3>
                             </div>
 
                             <div class="bus-seats">
@@ -190,7 +190,7 @@
                                 <div class="badge">8 місць</div>
                             </div>
                             <div class="bus-info">
-                                <strong>Дата повернення:</strong> {{ bus.return_date|date:"d.m.Y" }} о {{ bus.return_time|time:"H:i" }}
+                                <strong>Дата виїзду:</strong> {{ bus.departure_date|date:"d.m.Y" }} ({{ bus.weekday_label }}) — <strong>Час:</strong> <h3>о 6:00</h3>
                             </div>
 
                             <div class="bus-seats">

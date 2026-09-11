@@ -1,7 +1,11 @@
+from unittest.mock import patch
+from datetime import date as real_date
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from Transportation_APP.forms import BookingForm, get_bus_dates, get_bus_direction_dates
+from auth_system.forms import CustomUserCreationForm
+from Transportation_APP.forms import BookingForm, get_bus_dates, get_bus_direction_dates, get_next_weekday_date
 from Transportation_APP.models import Booking, Bus, BusGroup
 
 
@@ -37,6 +41,16 @@ class SiteAccessTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'value="4"')
 
+    def test_next_weekday_date_moves_to_next_week_when_needed(self):
+        with patch('Transportation_APP.forms.date') as mocked_date:
+            mocked_date.today.return_value = real_date(2026, 9, 3)
+            mocked_date.side_effect = lambda *args, **kwargs: real_date(*args, **kwargs)
+
+            self.assertEqual(get_next_weekday_date(1), real_date(2026, 9, 8))
+            self.assertEqual(get_next_weekday_date(2), real_date(2026, 9, 9))
+            self.assertEqual(get_next_weekday_date(4), real_date(2026, 9, 4))
+            self.assertEqual(get_next_weekday_date(5), real_date(2026, 9, 5))
+
     def test_bus_departure_dates_follow_two_schedule_groups(self):
         bus1_first_group, _ = get_bus_dates(1)
         bus2_first_group, _ = get_bus_dates(2)
@@ -68,6 +82,13 @@ class SiteAccessTests(TestCase):
         self.assertEqual(bus.direction, 'outbound')
         self.assertEqual(bus.number, 1)
         self.assertEqual(str(bus), 'Автобус 1 — Рейси в напрямку')
+
+    def test_registration_form_requires_first_and_last_name_instead_of_email(self):
+        form = CustomUserCreationForm()
+
+        self.assertIn('first_name', form.fields)
+        self.assertIn('last_name', form.fields)
+        self.assertNotIn('email', form.fields)
 
     def test_post_page_loads_for_logged_user(self):
         self.client.login(username='testuser', password='pass12345')

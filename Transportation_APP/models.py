@@ -42,9 +42,9 @@ class Bus(models.Model):
     number = models.PositiveIntegerField(default=1)
     direction = models.CharField(max_length=20, choices=DIRECTION_CHOICES, default="outbound")
     departure_date = models.DateField()
-    departure_time = models.TimeField(default="08:00")
+    departure_time = models.TimeField(default="06:00")
     return_date = models.DateField()
-    return_time = models.TimeField(default="18:00")
+    return_time = models.TimeField(default="06:00")
     note = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:

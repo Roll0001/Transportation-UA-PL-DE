@@ -5,9 +5,15 @@ from django import forms
 from .models import Booking, Post, CITY_CHOICES
 
 
-def get_bus_direction_dates(bus_number, is_return_trip=False):
-    today = date.today()
+def get_next_weekday_date(target_weekday, reference_date=None):
+    today = reference_date or date.today()
+    days_until_departure = (target_weekday - today.weekday()) % 7
+    if days_until_departure == 0:
+        days_until_departure = 7
+    return today + timedelta(days=days_until_departure)
 
+
+def get_bus_direction_dates(bus_number, is_return_trip=False):
     if is_return_trip:
         departure_weekdays = {
             1: 2,
@@ -21,13 +27,10 @@ def get_bus_direction_dates(bus_number, is_return_trip=False):
 
     departure_weekday = departure_weekdays.get(bus_number)
     if departure_weekday is None:
+        today = date.today()
         return today, today
 
-    days_until_departure = (departure_weekday - today.weekday()) % 7
-    if days_until_departure == 0:
-        days_until_departure = 7
-    departure_date = today + timedelta(days=days_until_departure)
-
+    departure_date = get_next_weekday_date(departure_weekday)
     return_date = departure_date + timedelta(days=2)
     return departure_date, return_date
 

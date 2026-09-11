@@ -6,17 +6,16 @@ from django.db import migrations, models
 def set_bus_times(apps, schema_editor):
     """Set specific departure and return times for each bus."""
     Bus = apps.get_model('Transportation_APP', 'Bus')
-    
-    # Bus 1: 08:00 departure, 19:00 return
-    # Bus 2: 10:00 departure, 21:00 return
-    Bus.objects.filter(number=1).update(departure_time='08:00', return_time='19:00')
-    Bus.objects.filter(number=2).update(departure_time='10:00', return_time='21:00')
+
+    # All routes now depart at 06:00.
+    Bus.objects.filter(number=1).update(departure_time='06:00', return_time='06:00')
+    Bus.objects.filter(number=2).update(departure_time='06:00', return_time='06:00')
 
 
 def reverse_times(apps, schema_editor):
     """Reset times to default values."""
     Bus = apps.get_model('Transportation_APP', 'Bus')
-    Bus.objects.all().update(departure_time='08:00', return_time='18:00')
+    Bus.objects.all().update(departure_time='06:00', return_time='06:00')
 
 
 class Migration(migrations.Migration):
@@ -29,12 +28,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='bus',
             name='departure_time',
-            field=models.TimeField(default='08:00'),
+            field=models.TimeField(default='06:00'),
         ),
         migrations.AddField(
             model_name='bus',
             name='return_time',
-            field=models.TimeField(default='18:00'),
+            field=models.TimeField(default='06:00'),
         ),
         migrations.RunPython(set_bus_times, reverse_times),
     ]

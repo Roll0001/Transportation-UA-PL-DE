@@ -4,7 +4,16 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum
 
 from .forms import BookingForm, PostForm, get_bus_dates, get_bus_departure_date, get_bus_direction_dates
-from .models import Booking, Bus, Post
+from .models import Booking, Post
+
+
+UKRAINIAN_WEEKDAYS = [
+    'понеділок', 'вівторок', 'середа', 'четвер', 'пʼятниця', 'субота', 'неділя'
+]
+
+
+def get_weekday_label(date_value):
+    return UKRAINIAN_WEEKDAYS[date_value.weekday()]
 
 
 def is_admin_user(user):
@@ -64,53 +73,44 @@ def home_page(request):
     return render(request, "home.html", {"route_stops": route_stops})
 
 
+@login_required(login_url="/auth/login/")
+def photos_page(request):
+    return render(request, "photos.html")
+
+
 def available_spots_page(request):
     buses = []
-    bus_records = Bus.objects.all().order_by("direction", "number")
 
-    for bus in bus_records:
+    for bus_number in [1, 2]:
+        departure_date, return_date = get_bus_direction_dates(bus_number, is_return_trip=False)
         occupied = sorted(set(
-            Booking.objects.filter(bus_number=bus.number, departure_date=bus.departure_date).values_list("seat_number", flat=True)
+            Booking.objects.filter(bus_number=bus_number, departure_date=departure_date).values_list("seat_number", flat=True)
         ))
         buses.append({
-            "number": bus.number,
+            "number": bus_number,
             "seats": list(range(1, 9)),
             "occupied": [seat for seat in range(1, 9) if seat in occupied],
-            "departure_date": bus.departure_date,
-            "return_date": bus.return_date,
-            "note": bus.note or "Маршрут без додаткових відомостей.",
-            "group": bus.direction,
+            "departure_date": departure_date,
+            "return_date": return_date,
+            "note": "Відправлення у напрямку до пункту призначення.",
+            "group": "outbound",
+            "weekday_label": get_weekday_label(departure_date),
         })
 
-    if not buses:
-        for bus_number in [1, 2]:
-            departure_date, return_date = get_bus_direction_dates(bus_number, is_return_trip=False)
-            occupied = sorted(set(
-                Booking.objects.filter(bus_number=bus_number, departure_date=departure_date).values_list("seat_number", flat=True)
-            ))
-            buses.append({
-                "number": bus_number,
-                "seats": list(range(1, 9)),
-                "occupied": [seat for seat in range(1, 9) if seat in occupied],
-                "departure_date": departure_date,
-                "return_date": return_date,
-                "note": "Відправлення у напрямку до пункту призначення.",
-                "group": "outbound",
-            })
-
-            return_departure_date, return_return_date = get_bus_direction_dates(bus_number, is_return_trip=True)
-            occupied_return = sorted(set(
-                Booking.objects.filter(bus_number=bus_number, departure_date=return_departure_date).values_list("seat_number", flat=True)
-            ))
-            buses.append({
-                "number": bus_number,
-                "seats": list(range(1, 9)),
-                "occupied": [seat for seat in range(1, 9) if seat in occupied_return],
-                "departure_date": return_departure_date,
-                "return_date": return_return_date,
-                "note": "Повернення того самого автобуса назад.",
-                "group": "return",
-            })
+        return_departure_date, return_return_date = get_bus_direction_dates(bus_number, is_return_trip=True)
+        occupied_return = sorted(set(
+            Booking.objects.filter(bus_number=bus_number, departure_date=return_departure_date).values_list("seat_number", flat=True)
+        ))
+        buses.append({
+            "number": bus_number,
+            "seats": list(range(1, 9)),
+            "occupied": [seat for seat in range(1, 9) if seat in occupied_return],
+            "departure_date": return_departure_date,
+            "return_date": return_return_date,
+            "note": "Повернення того самого автобуса назад.",
+            "group": "return",
+            "weekday_label": get_weekday_label(return_departure_date),
+        })
 
     return render(request, "availablespots.html", {"buses": buses})
 
@@ -125,13 +125,15 @@ def booking_page(request):
     selected_seat = request.GET.get("seat")
     selected_bus = request.GET.get("bus")
     selected_direction = request.GET.get("direction", "outbound")
-    
+    selected_date = None
+
     if selected_seat:
         initial["seat_number"] = selected_seat
     if selected_bus:
         initial["bus_number"] = int(selected_bus)
         is_return = selected_direction == "return"
-        initial["departure_date"] = get_bus_direction_dates(int(selected_bus), is_return_trip=is_return)[0]
+        selected_date = get_bus_direction_dates(int(selected_bus), is_return_trip=is_return)[0]
+        initial["departure_date"] = selected_date
 
     form = BookingForm(initial=initial)
     if request.method == "POST":
@@ -144,7 +146,16 @@ def booking_page(request):
             booking.save()
             messages.success(request, "Бронювання успішно створено.")
             return redirect("my_bookings")
-    return render(request, "booking.html", {"form": form})
+    if not selected_date and form.initial.get("departure_date"):
+        selected_date = form.initial["departure_date"]
+    direction_label = "Відправлення" if selected_direction != "return" else "Повернення"
+    return render(request, "booking.html", {
+        "form": form,
+        "selected_date": selected_date,
+        "selected_bus": selected_bus,
+        "selected_direction": selected_direction,
+        "direction_label": direction_label,
+    })
 
 
 @login_required(login_url="/auth/login/")

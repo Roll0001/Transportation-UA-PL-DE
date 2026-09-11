@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Фото автобуса{% endblock %}
+
+{% block content %}
+<div class="hero photos-hero">
+    <span class="section-kicker photos-kicker">Наш транспорт</span>
+    <h1>Фото автобуса та салону</h1>
+</div>
+
+<section class="travel-gallery" aria-label="Наш транспорт">
+    <div class="gallery-heading">
+        <div>
+            <span class="section-kicker">Комфорт у дорозі</span>
+            <h2>Наш транспорт</h2>
+        </div>
+        <p>Перегляньте автобуси та салон, у якому проходитиме ваша подорож.</p>
+    </div>
+    <div class="gallery-group">
+        <div class="gallery-group-heading">
+            <h3>Фото автобуса</h3>
+            <span>3 фото</span>
+        </div>
+        <div class="gallery-grid">
+            <button class="gallery-item" type="button" data-gallery="bus" data-index="0" aria-label="Відкрити фото автобуса 1">
+                <img class="gallery-photo gallery-photo-large" src="{{ MEDIA_URL }}Bus photo 1.jpg" alt="Автобус для міжнародних перевезень">
+            </button>
+            <button class="gallery-item" type="button" data-gallery="bus" data-index="1" aria-label="Відкрити фото автобуса 2">
+                <img class="gallery-photo" src="{{ MEDIA_URL }}Bus photo 2.jpg" alt="Автобус на маршруті">
+            </button>
+            <button class="gallery-item" type="button" data-gallery="bus" data-index="2" aria-label="Відкрити фото автобуса 3">
+                <img class="gallery-photo" src="{{ MEDIA_URL }}Bus photo 3.jpg" alt="Автобус для поїздок Європою">
+            </button>
+        </div>
+    </div>
+    <div class="gallery-group">
+        <div class="gallery-group-heading">
+            <h3>Фото салону автобуса</h3>
+            <span>4 фото</span>
+        </div>
+        <div class="gallery-grid gallery-grid-interior">
+            <button class="gallery-item" type="button" data-gallery="interior" data-index="0" aria-label="Відкрити фото салону 1">
+                <img class="gallery-photo" src="{{ MEDIA_URL }}Interior photos 1.jpg" alt="Салон автобуса">
+            </button>
+            <button class="gallery-item" type="button" data-gallery="interior" data-index="1" aria-label="Відкрити фото салону 2">
+                <img class="gallery-photo" src="{{ MEDIA_URL }}Interior photos 2.jpg" alt="Пасажирські місця в салоні автобуса">
+            </button>
+            <button class="gallery-item" type="button" data-gallery="interior" data-index="2" aria-label="Відкрити фото салону 3">
+                <img class="gallery-photo" src="{{ MEDIA_URL }}Interior photos 3.jpg" alt="Комфортний салон автобуса">
+            </button>
+            <button class="gallery-item" type="button" data-gallery="interior" data-index="3" aria-label="Відкрити фото салону 4">
+                <img class="gallery-photo" src="{{ MEDIA_URL }}Interior photos 4.jpg" alt="Салон автобуса з пасажирськими сидіннями">
+            </button>
+        </div>
+    </div>
+</section>
+
+<div class="lightbox" id="gallery-lightbox" role="dialog" aria-modal="true" aria-label="Перегляд фото" hidden>
+    <button class="lightbox-close" type="button" aria-label="Закрити перегляд">&times;</button>
+    <button class="lightbox-arrow lightbox-prev" type="button" aria-label="Попереднє фото">&#8592;</button>
+    <figure class="lightbox-content">
+        <img id="lightbox-image" src="" alt="">
+        <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+    <button class="lightbox-arrow lightbox-next" type="button" aria-label="Наступне фото">&#8594;</button>
+</div>
+
+<script>
+    (() => {
+        const lightbox = document.getElementById('gallery-lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const items = [...document.querySelectorAll('.gallery-item')];
+        let activeGallery = [];
+        let activeIndex = 0;
+
+        const showPhoto = (index) => {
+            activeIndex = (index + activeGallery.length) % activeGallery.length;
+            const image = activeGallery[activeIndex].querySelector('img');
+            lightboxImage.src = image.src;
+            lightboxImage.alt = image.alt;
+            lightboxCaption.textContent = `${image.alt} · ${activeIndex + 1} з ${activeGallery.length}`;
+        };
+
+        const closeLightbox = () => {
+            lightbox.hidden = true;
+            document.body.classList.remove('lightbox-open');
+        };
+
+        items.forEach((item) => {
+            item.addEventListener('click', () => {
+                activeGallery = items.filter((galleryItem) => galleryItem.dataset.gallery === item.dataset.gallery);
+                showPhoto(Number(item.dataset.index));
+                lightbox.hidden = false;
+                document.body.classList.add('lightbox-open');
+            });
+        });
+
+        document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+        document.querySelector('.lightbox-prev').addEventListener('click', () => showPhoto(activeIndex - 1));
+        document.querySelector('.lightbox-next').addEventListener('click', () => showPhoto(activeIndex + 1));
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (lightbox.hidden) return;
+            if (event.key === 'Escape') closeLightbox();
+            if (event.key === 'ArrowLeft') showPhoto(activeIndex - 1);
+            if (event.key === 'ArrowRight') showPhoto(activeIndex + 1);
+        });
+    })();
+</script>
+
+
+{% endblock %}

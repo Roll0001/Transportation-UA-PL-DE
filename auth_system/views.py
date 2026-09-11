@@ -2,13 +2,25 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import redirect, render
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, build_username_from_name
 
 
 class EmailAuthenticationForm(AuthenticationForm):
     username = AuthenticationForm.base_fields['username']
-    username.widget.attrs.update({'placeholder': 'example@mail.com'})
-    username.label = 'Електронна пошта'
+    username.widget.attrs.update({'placeholder': 'Введіть ваше Імя та прізвище через крапку'})
+    username.label = "Ім'я та прізвище"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get("username")
+        if username:
+            normalized = username.strip()
+            if "." not in normalized:
+                first_name, last_name = normalized, ""
+            else:
+                first_name, last_name = normalized.split(".", 1)
+            cleaned_data["username"] = build_username_from_name(first_name, last_name)
+        return cleaned_data
 
 
 def register_page(request):

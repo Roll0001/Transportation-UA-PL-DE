@@ -3,14 +3,23 @@
 {% block title %}Реєстрація{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 620px; margin: 40px auto;">
-    <h2>Реєстрація</h2>
+<div class="auth-layout">
+    <div class="auth-visual">
+        <div class="auth-copy">
+            <!-- <span class="section-kicker" style="color: #bfdbfe;">Ваша подорож починається тут</span> -->
+            <h1>Створіть акаунт</h1>
+            <p>Бронюйте! Подорожуйте! Насолоджуйтесь подорожжю!</p>
+        </div>
+    </div>
+    <div class="auth-form-panel">
+        <h2>Реєстрація</h2>
+        <p class="auth-subtitle">Це займе лише кілька хвилин.</p>
     <form method="post" novalidate>
         {% csrf_token %}
         {{ form.non_field_errors }}
         {% for field in form %}
             <div>
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <label for="{{ field.id_for_label }}">{% if field.name == 'first_name' %}Ім'я{% elif field.name == 'last_name' %}Прізвище{% else %}{{ field.label }}{% endif %}</label>
                 {{ field }}
                 {% if field.help_text %}
                     <small style="color: #64748b; display: block; margin-top: 4px;">{{ field.help_text }}</small>
@@ -22,5 +31,7 @@
         {% endfor %}
         <button type="submit">Зареєструватися</button>
     </form>
+        <p class="auth-switch">Вже маєте акаунт? <a href="/auth/login/">Увійти</a></p>
+    </div>
 </div>
 {% endblock %}

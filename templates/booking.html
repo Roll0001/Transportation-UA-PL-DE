@@ -87,6 +87,12 @@
 <div class="booking-wrap">
     <div class="booking-panel">
         <h2>Форма бронювання</h2>
+        {% if selected_date %}
+            <div class="summary-box">
+                <div class="summary-row"><strong>Маршрут:</strong><span>Автобус {{ selected_bus }} · {{ direction_label }}</span></div>
+                <div class="summary-row"><strong>Дата:</strong><span>{{ selected_date|date:"d.m.Y" }}</span></div>
+            </div>
+        {% endif %}
         <form method="post" class="booking-form">
             {% csrf_token %}
             {{ form.non_field_errors }}
