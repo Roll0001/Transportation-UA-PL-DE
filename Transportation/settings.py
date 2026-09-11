@@ -10,6 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
+import dj_database_url
+
+# Секретний ключ через змінну середовища
+SECRET_KEY = os.environ.get('SECRET_KEY', 'твій-старий-ключ-для-локальної-розробки')
+
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+ALLOWED_HOSTS = ['TransportationUAPLDE.pythonanywhere.com']  # додай свій домен, якщо є
+
+# Статичні файли
+STATIC_URL = '/static/'
+STATIC_ROOT = '/home/Roll0001/Transportation-UA-PL-DE/static'
+
+
+
+
+
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,9 +45,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 SECRET_KEY = 'django-insecure-r3b(6qzywvch4dp)^81@dlrfrt!1$0=6empw8dct)!llb@ue)u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
